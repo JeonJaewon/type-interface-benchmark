@@ -1,10 +1,19 @@
-import { JSDOM } from "jsdom";
+import { execSync } from "child_process";
+import { performance } from "perf_hooks";
 
-// Set up a simulated browser environment
-const { window } = new JSDOM("<html><body></body></html>");
-const { document } = window;
+function measureCompileTimes(filePath: string, iterations: number): number[] {
+  const times: number[] = [];
 
-// Function to calculate average, max, and min times
+  for (let i = 0; i < iterations; i++) {
+    const start = performance.now();
+    execSync(`tsc --noEmit ${filePath}`, { stdio: "ignore" });
+    const end = performance.now();
+    times.push(end - start);
+  }
+
+  return times;
+}
+
 function calculateStats(times: number[]): {
   average: number;
   max: number;
@@ -18,47 +27,22 @@ function calculateStats(times: number[]): {
   };
 }
 
-// Number of iterations for the benchmark
-const iterations = 100;
+const iterations = 10; // Number of iterations for the benchmark
 
-// Arrays to store execution times
-const typeTimes: number[] = [];
-const interfaceTimes: number[] = [];
+const typeTimes = measureCompileTimes("type-test.ts", iterations);
+const interfaceTimes = measureCompileTimes("interface-test.ts", iterations);
 
-for (let i = 0; i < iterations; i++) {
-  // Extending HTMLDivElement with a type
-  const typeStart = performance.now();
-  type ExtendedDivType = HTMLDivElement & {
-    customProperty: string;
-  };
-  const divType: ExtendedDivType = Object.assign(
-    document.createElement("div"),
-    {
-      customProperty: "Type Property",
-    }
-  );
-  const typeEnd = performance.now();
-  typeTimes.push(typeEnd - typeStart);
-
-  // Extending HTMLDivElement with an interface
-  const interfaceStart = performance.now();
-  interface ExtendedDivInterface extends HTMLDivElement {
-    customProperty: string;
-  }
-  const divInterface: ExtendedDivInterface = Object.assign(
-    document.createElement("div"),
-    {
-      customProperty: "Interface Property",
-    }
-  );
-  const interfaceEnd = performance.now();
-  interfaceTimes.push(interfaceEnd - interfaceStart);
-}
-
-// Calculate stats for type and interface
 const typeStats = calculateStats(typeTimes);
 const interfaceStats = calculateStats(interfaceTimes);
 
-// Output the results
-console.log("Type Extension Stats:", typeStats);
-console.log("Interface Extension Stats:", interfaceStats);
+console.log("Type Compile Stats:", {
+  average: typeStats.average.toFixed(5),
+  max: typeStats.max.toFixed(5),
+  min: typeStats.min.toFixed(5),
+});
+
+console.log("Interface Compile Stats:", {
+  average: interfaceStats.average.toFixed(5),
+  max: interfaceStats.max.toFixed(5),
+  min: interfaceStats.min.toFixed(5),
+});
