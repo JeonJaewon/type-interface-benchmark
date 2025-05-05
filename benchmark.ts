@@ -29,8 +29,11 @@ function calculateStats(times: number[]): {
 
 const iterations = 10; // Number of iterations for the benchmark
 
-const typeTimes = measureCompileTimes("type-test.ts", iterations);
-const interfaceTimes = measureCompileTimes("interface-test.ts", iterations);
+const typeTimes = measureCompileTimes("./tests/type-test.ts", iterations);
+const interfaceTimes = measureCompileTimes(
+  "./tests/interface-test.ts",
+  iterations
+);
 
 const typeStats = calculateStats(typeTimes);
 const interfaceStats = calculateStats(interfaceTimes);
