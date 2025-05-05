@@ -38,13 +38,13 @@ const interfaceTimes = measureCompileTimes(
 const typeStats = calculateStats(typeTimes);
 const interfaceStats = calculateStats(interfaceTimes);
 
-console.log("Type Compile Stats:", {
+console.log("Type Compile Stats (ms):", {
   average: typeStats.average.toFixed(5),
   max: typeStats.max.toFixed(5),
   min: typeStats.min.toFixed(5),
 });
 
-console.log("Interface Compile Stats:", {
+console.log("Interface Compile Stats (ms):", {
   average: interfaceStats.average.toFixed(5),
   max: interfaceStats.max.toFixed(5),
   min: interfaceStats.min.toFixed(5),
